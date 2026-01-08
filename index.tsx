@@ -6,7 +6,11 @@ import App from './App';
 // تسجيل الـ Service Worker لتمكين ميزات PWA والعمل دون اتصال
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+    const swUrl = window.location.origin + '/sw.js';
+    console.log('Current Origin:', window.location.origin);
+    console.log('Attempting to register Service Worker from:', swUrl);
+
+    navigator.serviceWorker.register(swUrl, { scope: '/' })
       .then(reg => {
         console.log('✅ Al-Shwaia Smart SW Registered');
         

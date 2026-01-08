@@ -3,6 +3,7 @@ const CACHE_NAME = 'alshwaia-smart-v3.1-stable';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
+  '/index.js', /* NEW: Include the main compiled JS bundle */
   '/metadata.json',
   'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap',
   'https://cdn-icons-png.flaticon.com/512/628/628283.png'
@@ -53,9 +54,10 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        // العودة لصفحة البداية إذا فشل الاتصال بالملفات الأساسية
+        // العودة لصفحة البداية إذا فشل الاتصال بالملفات الأساسية (أو فشل جلب أي مورد ضمن النطاق)
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          // Attempt to return the cached root of the PWA for navigation requests
+          return caches.match(self.registration.scope || '/');
         }
       });
     })
