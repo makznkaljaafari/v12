@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { logger } from '../loggerService';
 import { indexedDbService } from '../indexedDbService';
 import { authService } from '../authService';
+import { PostgrestResponse } from '@supabase/supabase-js'; // Import PostgrestResponse
 
 export const CACHE_TTL = 30000; 
 export const l1Cache: Record<string, { data: any, timestamp: number }> = {};
@@ -15,14 +16,15 @@ export const cleanPayload = (payload: any) => {
   return cleaned;
 };
 
-export async function withRetry<T>(fn: () => Promise<{ data: T | null, error: any }>, key: string, forceFresh = false): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<PostgrestResponse<T>>, key: string, forceFresh = false): Promise<T> {
   if (!forceFresh && l1Cache[key] && (Date.now() - l1Cache[key].timestamp < CACHE_TTL)) {
     return l1Cache[key].data as T;
   }
   
   // نحاول دائماً الاتصال بالسحابة أولاً، ونتعامل مع الخطأ بمرونة
   try {
-    const { data, error } = await fn();
+    const response = await fn(); // Call the function to get PostgrestResponse
+    const { data, error } = response; // Destructure data and error from the response
     if (!error && data !== null) {
       l1Cache[key] = { data, timestamp: Date.now() };
       indexedDbService.saveData(key, data).catch(() => {});

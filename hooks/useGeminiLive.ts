@@ -106,7 +106,7 @@ export const useGeminiLive = (onToolCall: (fc: any) => void) => {
           onmessage: async (msg: LiveServerMessage) => {
             if (msg.serverContent?.outputTranscription) setStatusText(msg.serverContent.outputTranscription.text);
             if (msg.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data) playAudio(msg.serverContent.modelTurn.parts[0].inlineData.data);
-            if (msg.toolCall) msg.toolCall.functionCalls.forEach(onToolCall);
+            if (msg.toolCall) msg.toolCall.functionCalls?.forEach(onToolCall); // Added optional chaining here
           },
           onerror: (e) => { console.error("Gemini Error:", e); stop(); },
           onclose: () => stop()

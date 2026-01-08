@@ -5,15 +5,17 @@
   "private": true,
   "description": "نظام المحاسبة الذكي لوكالات القات - نسخة النشر المستقرة",
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "@google/genai": "^1.0.0",
     "@supabase/supabase-js": "^2.45.0",
     "recharts": "^2.15.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "@types/react": "^18.2.6",
+    "@types/react-dom": "^18.2.20"
   },
   "scripts": {
     "start": "serve .",

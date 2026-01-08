@@ -106,7 +106,8 @@ export const dataService = {
   base64ToBytes(base64: string): Uint8Array {
     const binary_string = window.atob(base64.split(',')[1] || base64);
     const len = binary_string.length;
-    const bytes = new Uint8Array(len);
+    const buffer = new ArrayBuffer(len); // Explicitly create ArrayBuffer
+    const bytes = new Uint8Array(buffer); // Create Uint8Array from ArrayBuffer
     for (let i = 0; i < len; i++) { bytes[i] = binary_string.charCodeAt(i); }
     return bytes;
   },

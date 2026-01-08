@@ -77,7 +77,7 @@ export const supabaseStorageService = {
 
       if (error) {
         // Log error but don't re-throw if it's "not found" to allow main record deletion
-        if (error.statusCode === '404' || error.message.includes('not found')) {
+        if (error.status === 404 || error.message.includes('not found')) { // Corrected from error.statusCode to error.status
             logger.warn(`Image file not found for deletion: ${filePath}. Proceeding with record deletion.`);
             return;
         }

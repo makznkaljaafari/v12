@@ -30,7 +30,7 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
 
   return (
     <button 
-      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`} 
+      className={`${baseStyles} ${variants[variant as keyof typeof variants]} ${sizes[size as keyof typeof sizes]} ${className}`} 
       disabled={loading}
       {...props}
     >
