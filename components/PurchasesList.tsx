@@ -104,12 +104,9 @@ const PurchasesList: React.FC = memo(() => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center pt-4 border-t border-[var(--color-border-default)]/50" onClick={e => e.stopPropagation()}>
-                    <span className="text-[10px] font-bold text-[var(--color-text-muted)]">📅 {new Date(p.date).toLocaleDateString('ar-YE')}</span>
-                    <div className="flex gap-2">
-                        <button onClick={() => navigate('add-purchase', { purchaseId: p.id })} className="w-8 h-8 bg-[var(--color-status-warning-bg)] text-[var(--color-status-warning)] rounded-xl flex items-center justify-center shadow-sm" aria-label={`تعديل فاتورة شراء المورد ${p.supplier_name}`}>✏️</button>
-                        <button onClick={() => navigate('purchase-invoice-view', { purchase: p })} className="w-8 h-8 bg-[var(--color-status-info-bg)] text-[var(--color-status-info)] rounded-xl flex items-center justify-center shadow-sm" aria-label={`عرض فاتورة شراء المورد ${p.supplier_name}`}>📄</button>
-                        <button onClick={() => handleDelete(p)} className="w-8 h-8 bg-[var(--color-status-danger-bg)] text-[var(--color-status-danger)] rounded-xl flex items-center justify-center shadow-sm" aria-label={`حذف فاتورة شراء المورد ${p.supplier_name}`}>🗑️</button>
-                    </div>
+                    <button onClick={() => navigate('add-purchase', { purchaseId: p.id })} className="w-8 h-8 bg-[var(--color-status-warning-bg)] text-[var(--color-status-warning)] rounded-xl flex items-center justify-center shadow-sm" aria-label={`تعديل فاتورة شراء المورد ${p.supplier_name}`}>✏️</button>
+                    <button onClick={() => navigate('purchase-invoice-view', { purchase: p })} className="w-8 h-8 bg-[var(--color-status-info-bg)] text-[var(--color-status-info)] rounded-xl flex items-center justify-center shadow-sm" aria-label={`عرض فاتورة شراء المورد ${p.supplier_name}`}>📄</button>
+                    <button onClick={() => handleDelete(p)} className="w-8 h-8 bg-[var(--color-status-danger-bg)] text-[var(--color-status-danger)] rounded-xl flex items-center justify-center shadow-sm" aria-label={`حذف فاتورة شراء المورد ${p.supplier_name}`}>🗑️</button>
                   </div>
                 </div>
             ))}

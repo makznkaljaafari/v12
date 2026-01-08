@@ -62,7 +62,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     } else if (currentImageBase64 && currentImageMimeType) {
       // Create a local blob URL for preview if Base64 data is present
       const bytes = dataService.base64ToBytes(currentImageBase64);
-      const blob = new Blob([bytes.buffer], { type: currentImageMimeType }); // Use bytes.buffer to get ArrayBuffer
+      const blob = new Blob([bytes], { type: currentImageMimeType }); // Corrected: pass bytes directly
       const newBlobUrl = URL.createObjectURL(blob);
       setBlobUrl(newBlobUrl);
       setPreviewUrl(newBlobUrl);

@@ -53,13 +53,13 @@ const DebtsReport: React.FC = memo(() => {
 
         <div className="flex bg-[var(--color-background-tertiary)] p-1 rounded-2xl gap-1 border border-[var(--color-border-default)]">
            {(['YER', 'SAR', 'OMR'] as const).map(cur => (
-             <button key={cur} onClick={() => setActiveCurrency(cur)} className={`flex-1 py-2.5 rounded-xl font-black text-xs transition-all ${activeCurrency === cur ? 'bg-[var(--color-accent-sky)] text-white shadow-lg' : 'text-slate-400'}`}>{cur}</button>
+             <button key={cur} onClick={() => setActiveCurrency(cur)} className={`flex-1 py-2.5 rounded-xl font-black text-xs transition-all ${activeCurrency === cur ? 'bg-[var(--color-accent-sky)] text-white shadow-lg' : 'text-slate-400 opacity-60'}`}>{cur}</button>
            ))}
         </div>
 
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
            {[{ id: 'all', label: 'الكل' }, { id: 'customer_debts', label: 'لنا' }, { id: 'supplier_debts', label: 'علينا' }, { id: 'critical', label: 'حرج ⚠️' }].map(tab => (
-             <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex-shrink-0 px-5 py-2 rounded-full font-black text-xs border-2 ${activeTab === tab.id ? 'bg-indigo-600 text-white border-transparent' : 'bg-white text-slate-400 border-slate-200'}`}>{tab.label}</button>
+             <button key={tab.id} onClick={() => setActiveTab(tab.id as TabType)} className={`flex-shrink-0 px-5 py-2 rounded-full font-black text-xs border-2 ${activeTab === tab.id ? 'bg-indigo-600 text-white border-transparent' : 'bg-white text-slate-400 border-slate-200'}`}>{tab.label}</button>
            ))}
         </div>
 

@@ -1,3 +1,5 @@
+
+
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -73,7 +75,6 @@ const CategoriesList: React.FC = memo(() => {
                                     <td className="p-4 text-center border-l font-bold tabular-nums text-[var(--color-text-muted)]">{cat.price.toLocaleString()} {cat.currency}</td>
                                     <td className="p-4 text-center border-l">
                                         <div className="flex items-center justify-center gap-2">
-                                            {/* Fix: Changed onNavigate to navigate */}
                                             <button onClick={() => navigate('add-sale', { qatType: cat.name })} className="p-2 hover:bg-[var(--color-status-info-bg)] text-[var(--color-status-info)] rounded-lg transition-all">💰</button>
                                             <button onClick={() => navigate('add-category', { categoryId: cat.id })} className="p-2 hover:bg-[var(--color-background-tertiary)] text-[var(--color-text-muted)] rounded-lg transition-all">📝</button>
                                         </div>
