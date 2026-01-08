@@ -66,7 +66,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = memo(({ isOpen, onClose
         </div>
         <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar text-right">
           {results ? (
-            <>
+            <React.Fragment key="search-results-content">
               {results.matchedPages.length > 0 && (
                 <section>
                   <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-2">الصفحات</h4>
@@ -94,9 +94,9 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = memo(({ isOpen, onClose
                       </button>
                     ))}
                   </div>
-                </section> section
+                </section>
               )}
-            </>
+            </React.Fragment>
           ) : (
             <div className="text-center py-20 opacity-20">
                <p className="font-black">ابدأ الكتابة للبحث سحابياً...</p>
