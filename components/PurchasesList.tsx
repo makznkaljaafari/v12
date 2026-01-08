@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -11,7 +12,7 @@ const PurchasesList: React.FC = memo(() => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
 
   const filteredPurchases = useMemo(() => {
-    return purchases.filter(p => p.supplier_name.toLowerCase().includes(searchTerm.toLowerCase()) || p.qat_type.toLowerCase().includes(searchTerm.toLowerCase()));
+    return purchases.filter((p: Purchase) => p.supplier_name.toLowerCase().includes(searchTerm.toLowerCase()) || p.qat_type.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [purchases, searchTerm]);
 
   const handleRefreshData = useCallback(() => {
@@ -85,7 +86,7 @@ const PurchasesList: React.FC = memo(() => {
 
         {viewMode === 'grid' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredPurchases.map((p) => (
+            {filteredPurchases.map((p: Purchase) => (
                 <div 
                   key={p.id} 
                   onClick={() => navigate('purchase-invoice-view', { purchase: p })}
@@ -128,13 +129,13 @@ const PurchasesList: React.FC = memo(() => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--color-border-default)]/50">
-                            {filteredPurchases.map((p, idx) => (
+                            {filteredPurchases.map((p: Purchase, idx: number) => (
                                 <tr 
                                   key={p.id} 
                                   onClick={() => navigate('purchase-invoice-view', { purchase: p })}
                                   className={`text-xs hover:bg-[var(--color-background-tertiary)]/50 transition-colors cursor-pointer ${p.is_returned ? 'opacity-40 bg-[var(--color-status-danger-bg)]/5' : ''}`}
                                 >
-                                    <td className="p-4 text-center font-black opacity-30 tabular-nums text-[var(--color-text-muted)]">{(filteredPurchases.length - idx)}</td>
+                                    <td className="p-4 text-center font-black opacity-30 tabular-nums">{(filteredPurchases.length - idx)}</td>
                                     <td className={`p-4 font-black border-l ${p.is_returned ? 'line-through text-[var(--color-status-danger)]' : 'text-[var(--color-text-default)]'}`}>{p.supplier_name}</td>
                                     <td className="p-4 text-center border-l font-bold text-[var(--color-text-default)]">{p.qat_type}</td>
                                     <td className="p-4 text-center border-l font-black tabular-nums text-[var(--color-text-default)]">{p.quantity} حبه</td>

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -8,13 +9,14 @@ import { BaseInput } from './ui/atoms/BaseInput';
 import { BaseSelect } from './ui/atoms/BaseSelect';
 import { OperationTotalBar } from './ui/molecules/OperationTotalBar';
 import { CurrencySwitcher } from './ui/molecules/CurrencySwitcher';
+import { Sale, Customer, QatCategory } from '../types';
 
 const AddSale: React.FC = () => {
   const { customers, categories, sales, addSale, navigate, navigationParams, addNotification, user, resolvedTheme, formatValue } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const editingSale = useMemo(() => 
-    navigationParams?.saleId ? sales.find(s => s.id === navigationParams.saleId) : null
+    navigationParams?.saleId ? sales.find((s: Sale) => s.id === navigationParams.saleId) : null
   , [sales, navigationParams?.saleId]);
 
   const [formData, setFormData] = useState({
@@ -35,13 +37,13 @@ const AddSale: React.FC = () => {
 
   useEffect(() => {
     if (!formData.customer_id && !editingSale) {
-      const generalCustomer = customers.find(c => c.name === "الزبون العام نقدي");
+      const generalCustomer = customers.find((c: Customer) => c.name === "الزبون العام نقدي");
       if (generalCustomer) setFormData(prev => ({ ...prev, customer_id: generalCustomer.id }));
     }
     if (!formData.qat_type && categories.length > 0) {
       setFormData(prev => ({ ...prev, qat_type: categories[0].name }));
     }
-  }, [customers, categories, editingSale]);
+  }, [customers, categories, editingSale, formData.customer_id, formData.qat_type]); // Added all necessary dependencies
 
   const totalAmount = useMemo(() => 
     formatValue((Number(formData.quantity) || 0) * (Number(formData.unit_price) || 0))
@@ -49,7 +51,7 @@ const AddSale: React.FC = () => {
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
-    const customer = customers.find(c => c.id === formData.customer_id);
+    const customer = customers.find((c: Customer) => c.id === formData.customer_id);
     if (!customer) return addNotification("تنبيه ⚠️", "يرجى اختيار العميل أولاً", "warning");
 
     const quantityNum = formatValue(formData.quantity);
@@ -70,10 +72,10 @@ const AddSale: React.FC = () => {
   };
 
   const customerOptions = useMemo(() => 
-    [{ value: '', label: '-- اختر العميل --' }, ...customers.map(c => ({ value: c.id, label: c.name }))]
+    [{ value: '', label: '-- اختر العميل --' }, ...customers.map((c: Customer) => ({ value: c.id, label: c.name }))]
   , [customers]);
 
-  const qatOptions = useMemo(() => categories.map(cat => ({ value: cat.name, label: cat.name })), [categories]);
+  const qatOptions = useMemo(() => categories.map((cat: QatCategory) => ({ value: cat.name, label: cat.name })), [categories]);
 
   return (
     <PageLayout title={editingSale ? "تعديل فاتورة" : "فاتورة بيع"} onBack={() => navigate('sales')}>

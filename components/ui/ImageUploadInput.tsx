@@ -1,3 +1,5 @@
+
+
 import React, { useRef, useState, useEffect } from 'react';
 import { supabaseStorageService } from '../../services/supabaseStorageService';
 import { useUI } from '../../context/UIContext';
@@ -60,7 +62,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     } else if (currentImageBase64 && currentImageMimeType) {
       // Create a local blob URL for preview if Base64 data is present
       const bytes = dataService.base64ToBytes(currentImageBase64);
-      const blob = new Blob([bytes], { type: currentImageMimeType });
+      const blob = new Blob([bytes.buffer], { type: currentImageMimeType }); // Use bytes.buffer to get ArrayBuffer
       const newBlobUrl = URL.createObjectURL(blob);
       setBlobUrl(newBlobUrl);
       setPreviewUrl(newBlobUrl);
@@ -68,12 +70,9 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       setPreviewUrl(undefined);
     }
 
-    return () => {
-      if (blobUrl && blobUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(blobUrl);
-      }
-    };
-  }, [currentImageUrl, currentImageBase64, currentImageMimeType]); // Include blobUrl in dependency to ensure cleanup happens before new creation
+    // `blobUrl` here is the *state variable from the previous render*, 
+    // not the new one. So it should not be in the dependency array.
+  }, [currentImageUrl, currentImageBase64, currentImageMimeType]); 
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

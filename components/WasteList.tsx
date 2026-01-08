@@ -1,17 +1,19 @@
 
+
 import React, { useState, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
+import { Waste } from '../types';
 
 const WasteList: React.FC = () => {
   const { wasteRecords, navigate, theme, deleteWaste, addNotification } = useApp(); // Added deleteWaste
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filtered = wasteRecords.filter(w => 
+  const filtered = wasteRecords.filter((w: Waste) => 
     w.qat_type.includes(searchTerm) || w.reason.includes(searchTerm)
   );
 
-  const totalLoss = filtered.reduce((sum, w) => sum + w.estimated_loss, 0);
+  const totalLoss = filtered.reduce((sum: number, w: Waste) => sum + w.estimated_loss, 0);
 
   const handleDelete = useCallback(async (id: string, qatType: string) => {
     if (window.confirm(`هل أنت متأكد من حذف سجل التالف للصنف ${qatType}؟`)) {
@@ -50,7 +52,7 @@ const WasteList: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y dark:divide-slate-800">
-                {filtered.map((w) => (
+                {filtered.map((w: Waste) => (
                   <tr key={w.id} className="text-[9px] hover:bg-rose-50 transition-colors">
                     <td className="p-1 text-center opacity-60 tabular-nums">{new Date(w.date).toLocaleDateString('ar-YE', {month:'2-digit', day:'2-digit'})}</td>
                     <td className="p-1 border-l font-black">{w.qat_type}</td>

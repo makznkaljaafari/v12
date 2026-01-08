@@ -3,13 +3,14 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
+import { Sale, Purchase } from '../types';
 
 const ReturnsList: React.FC = () => {
   const { sales, purchases, navigate, theme } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
 
   const allReturns = useMemo(() => {
-    const returnedSales = sales.filter(s => s.is_returned).map(s => ({ 
+    const returnedSales = sales.filter((s: Sale) => s.is_returned).map((s: Sale) => ({ 
       id: s.id, 
       type: 'بيع', 
       person: s.customer_name, 
@@ -20,7 +21,7 @@ const ReturnsList: React.FC = () => {
       original: s
     }));
     
-    const returnedPurchases = purchases.filter(p => p.is_returned).map(p => ({ 
+    const returnedPurchases = purchases.filter((p: Purchase) => p.is_returned).map((p: Purchase) => ({ 
       id: p.id, 
       type: 'شراء', 
       person: p.supplier_name, 

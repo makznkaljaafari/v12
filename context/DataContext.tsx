@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { useInventory } from './InventoryContext'; 
 import { useBusiness } from './BusinessContext';   

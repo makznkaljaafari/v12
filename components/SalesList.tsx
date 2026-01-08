@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -12,7 +13,7 @@ const SalesList: React.FC = memo(() => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
 
   const filteredSales = useMemo(() => {
-    return sales.filter(s => 
+    return sales.filter((s: Sale) => 
       s.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       s.qat_type.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -70,7 +71,7 @@ const SalesList: React.FC = memo(() => {
 
         {viewMode === 'grid' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredSales.map((sale) => (
+              {filteredSales.map((sale: Sale) => (
                 <SaleCard 
                   key={sale.id} 
                   sale={sale} 

@@ -1,8 +1,7 @@
-
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
-import { QatCategory } from '../types';
+import { QatCategory, Sale } from '../types';
 import { CategoryCard } from './inventory/CategoryCard';
 
 const CategoriesList: React.FC = memo(() => {
@@ -11,12 +10,12 @@ const CategoriesList: React.FC = memo(() => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const filteredCategories = useMemo(() => {
-    return categories.filter(cat => cat.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    return categories.filter((cat: QatCategory) => cat.name.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [categories, searchTerm]);
 
   const getCategoryStats = useCallback((catName: string) => {
-    const catSales = sales.filter(s => s.qat_type === catName && !s.is_returned);
-    const totalSold = catSales.reduce((sum, s) => sum + s.quantity, 0);
+    const catSales = sales.filter((s: Sale) => s.qat_type === catName && !s.is_returned);
+    const totalSold = catSales.reduce((sum: number, s: Sale) => sum + s.quantity, 0);
     return { totalSold, salesCount: catSales.length };
   }, [sales]);
 
@@ -42,7 +41,7 @@ const CategoriesList: React.FC = memo(() => {
 
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCategories.map((cat) => (
+            {filteredCategories.map((cat: QatCategory) => (
               <CategoryCard 
                 key={cat.id} 
                 cat={cat} 
@@ -66,14 +65,15 @@ const CategoriesList: React.FC = memo(() => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--color-border-default)]/50">
-                            {filteredCategories.map((cat, idx) => (
+                            {filteredCategories.map((cat: QatCategory, idx: number) => (
                                 <tr key={cat.id} className="text-xs hover:bg-[var(--color-background-tertiary)]/50 transition-colors">
                                     <td className="p-4 text-center font-black opacity-30 tabular-nums">{(filteredCategories.length - idx)}</td>
                                     <td className="p-4 font-black border-l text-[var(--color-text-default)]">🌿 {cat.name}</td>
-                                    <td className={`p-4 text-center border-l font-black tabular-nums ${cat.stock < 5 ? 'text-[var(--color-status-danger)]' : 'text-[var(--color-status-success)]'}`}>{cat.stock} حبه</td>
+                                    <td className={`p-4 text-center border-l font-black tabular-nums ${cat.stock < (cat.low_stock_threshold || 5) ? 'text-[var(--color-status-danger)]' : 'text-[var(--color-status-success)]'}`}>{cat.stock} حبه</td>
                                     <td className="p-4 text-center border-l font-bold tabular-nums text-[var(--color-text-muted)]">{cat.price.toLocaleString()} {cat.currency}</td>
                                     <td className="p-4 text-center border-l">
                                         <div className="flex items-center justify-center gap-2">
+                                            {/* Fix: Changed onNavigate to navigate */}
                                             <button onClick={() => navigate('add-sale', { qatType: cat.name })} className="p-2 hover:bg-[var(--color-status-info-bg)] text-[var(--color-status-info)] rounded-lg transition-all">💰</button>
                                             <button onClick={() => navigate('add-category', { categoryId: cat.id })} className="p-2 hover:bg-[var(--color-background-tertiary)] text-[var(--color-text-muted)] rounded-lg transition-all">📝</button>
                                         </div>

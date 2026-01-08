@@ -1,5 +1,7 @@
 
+
 import { FunctionCall } from '@google/genai';
+import { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
 export interface User {
   id: string;
@@ -165,6 +167,7 @@ export interface Waste {
   reason: string;
   date: string;
   created_at?: string;
+  updated_at?: string; // Added updated_at
 }
 
 // NEW: Interface for OpeningBalance to accurately type initial debt/credit records
@@ -237,3 +240,15 @@ export interface OfflineOperation {
   };
   timestamp: number;
 }
+
+// For BaseInput component, allowing 'rows' prop for textarea
+export type BaseInputProps = {
+  label?: string;
+  icon?: string;
+  error?: string;
+  as?: 'input' | 'textarea';
+} & (
+  | (InputHTMLAttributes<HTMLInputElement> & { as?: 'input' })
+  | (TextareaHTMLAttributes<HTMLTextAreaElement> & { as: 'textarea' })
+);
+

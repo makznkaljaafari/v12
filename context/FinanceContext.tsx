@@ -1,6 +1,5 @@
-
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { Voucher, Expense, Waste, ExchangeRates, ExpenseTemplate } from '../types';
+import { Voucher, Expense, Waste, ExchangeRates, ExpenseTemplate, QatCategory } from '../types';
 import { dataService } from '../services/dataService';
 import { useUI } from './UIContext';
 import { useInventory } from './InventoryContext';
@@ -31,7 +30,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const isEditing = !!v.id;
     const optimisticVoucher = { ...v, id: tempId, created_at: new Date().toISOString() };
     
-    setVouchers(prev => {
+    setVouchers((prev: Voucher[]) => {
         const existingIdx = prev.findIndex(item => item.id === tempId);
         if (existingIdx > -1) {
             const updated = [...prev];
@@ -102,7 +101,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const tempId = w.id || crypto.randomUUID();
     const isEditing = !!w.id;
     const optimisticWaste = { ...w, id: tempId, date: new Date().toISOString() } as Waste;
-    setWasteRecords(prev => {
+    setWasteRecords((prev: Waste[]) => {
         const existingIdx = prev.findIndex(item => item.id === tempId);
         if (existingIdx > -1) {
             const updated = [...prev];
@@ -112,7 +111,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return [optimisticWaste, ...prev];
     });
 
-    setCategories((prev: any[]) => prev.map(cat => {
+    setCategories((prev: QatCategory[]) => prev.map((cat: QatCategory) => {
       const oldWaste = isEditing ? wasteRecords.find(waste => waste.id === w.id) : undefined;
       let quantityChange = Number(w.quantity);
       if (oldWaste && cat.name === w.qat_type) {
@@ -184,7 +183,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const tempId = template.id || crypto.randomUUID();
     const isEditing = !!template.id;
     const optimisticTemplate = { ...template, id: tempId, created_at: new Date().toISOString() } as ExpenseTemplate;
-    setExpenseTemplates(prev => {
+    setExpenseTemplates((prev: ExpenseTemplate[]) => {
         const existingIdx = prev.findIndex(item => item.id === tempId);
         return existingIdx > -1 ? prev.map(item => item.id === tempId ? optimisticTemplate : item) : [optimisticTemplate, ...prev];
     });
@@ -277,7 +276,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     setWasteRecords(prev => prev.filter(w => w.id !== id));
     // Revert stock change optimistically
-    setCategories(prev => prev.map(cat => 
+    setCategories((prev: QatCategory[]) => prev.map((cat: QatCategory) => 
         cat.name === wasteToDelete.qat_type ? { ...cat, stock: Number(cat.stock) + Number(wasteToDelete.quantity) } : cat
     ));
 
@@ -288,9 +287,9 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       addNotification("تم الحذف 🗑️", "تم حذف سجل التالف بنجاح.", "success");
       dataService.logActivity(user.id, "حذف سجل تالف", `تم حذف سجل التالف للصنف: ${wasteToDelete.qat_type}, الكمية: ${wasteToDelete.quantity}`, 'waste');
     } catch (e: any) {
-      logger.error("Failed to delete waste record:", e);
-      setWasteRecords(prev => [...prev, wasteToDelete]); // Revert optimistic update
-      setCategories(prev => prev.map(cat => 
+      logger.error("Failed to delete waste:", e);
+      setWasteRecords(original); // Revert optimistic update
+      setCategories((prev: QatCategory[]) => prev.map((cat: QatCategory) => 
           cat.name === wasteToDelete.qat_type ? { ...cat, stock: Number(cat.stock) - Number(wasteToDelete.quantity) } : cat
       ));
       addNotification("خطأ ❌", e.message || "فشل حذف سجل التالف. حدث خطأ غير متوقع.", "warning");
@@ -298,43 +297,17 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [wasteRecords, addNotification, isOnline, user, setCategories]);
 
-  const deleteExpenseTemplate = useCallback(async (id: string) => {
-    if (!user?.id) {
-      addNotification("خطأ", "يجب تسجيل الدخول لإجراء العملية.", "warning");
-      throw new Error("No user ID available for operation.");
-    }
-
-    const templateToDelete = expenseTemplates.find(t => t.id === id);
-    if (!templateToDelete) {
-      addNotification("خطأ", "القالب غير موجود.", "warning");
-      return;
-    }
-
-    setExpenseTemplates(prev => prev.filter(t => t.id !== id));
-
-    if (!isOnline) addNotification("حذف محلي 🗑️", "تم حذف القالب في وضع عدم الاتصال. ستتم المزامنة لاحقاً.", "warning");
-
-    try {
-      await dataService.deleteRecord('expense_templates', id);
-      addNotification("تم الحذف 🗑️", "تم حذف قالب المصروف بنجاح.", "success");
-      dataService.logActivity(user.id, "حذف قالب مصروف", `تم حذف قالب المصروف: ${templateToDelete.title}`, 'expense');
-    } catch (e: any) {
-      logger.error("Failed to delete expense template:", e);
-      setExpenseTemplates(prev => [...prev, templateToDelete]); // Revert optimistic update
-      addNotification("خطأ ❌", e.message || "فشل حذف قالب المصروف. حدث خطأ غير متوقع.", "warning");
-      throw e;
-    }
-  }, [expenseTemplates, addNotification, isOnline, user]);
 
   const value = useMemo(() => ({
-    vouchers, setVouchers, expenses, setExpenses, expenseTemplates, setExpenseTemplates,
-    wasteRecords, setWasteRecords, exchangeRates, setExchangeRates, expenseCategories, setExpenseCategories,
-    addVoucher, addExpense, addWaste, updateExchangeRates, addOpeningBalance, addExpenseTemplate,
-    deleteVoucher, deleteExpense, deleteWaste, deleteExpenseTemplate, // Added delete functions
-    addExpenseCategory: (n: string) => setExpenseCategories(prev => [...prev, n])
-  }), [vouchers, expenses, expenseTemplates, wasteRecords, exchangeRates, expenseCategories, addVoucher, addExpense, addWaste, updateExchangeRates, addOpeningBalance, addExpenseTemplate, deleteVoucher, deleteExpense, deleteWaste, deleteExpenseTemplate]);
+    vouchers, setVouchers, expenses, setExpenses, expenseTemplates, setExpenseTemplates, wasteRecords, setWasteRecords, exchangeRates, setExchangeRates, expenseCategories,
+    addVoucher, addExpense, addWaste, updateExchangeRates, addOpeningBalance, addExpenseTemplate, deleteVoucher, deleteExpense, deleteWaste
+  }), [vouchers, expenses, expenseTemplates, wasteRecords, exchangeRates, expenseCategories, addVoucher, addExpense, addWaste, updateExchangeRates, addOpeningBalance, addExpenseTemplate, deleteVoucher, deleteExpense, deleteWaste]);
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;
 };
 
-export const useFinance = () => useContext(FinanceContext);
+export const useFinance = () => {
+  const context = useContext(FinanceContext);
+  if (!context) throw new Error('useFinance must be used within FinanceProvider');
+  return context;
+};

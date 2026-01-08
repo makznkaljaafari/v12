@@ -1,15 +1,17 @@
 
+
 import React, { useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
 import { shareToWhatsApp, formatVoucherReceipt } from '../services/shareService';
+import { Voucher } from '../types';
 
 const VoucherDetails: React.FC = () => {
   const { vouchers, navigationParams, navigate, deleteVoucher, addNotification, theme } = useApp();
   const voucherId = navigationParams?.voucherId;
 
   const voucher = useMemo(() => {
-    return vouchers.find(v => v.id === voucherId);
+    return vouchers.find((v: Voucher) => v.id === voucherId);
   }, [vouchers, voucherId]);
 
   if (!voucher) {

@@ -1,10 +1,12 @@
 
+
 import React, { useMemo, useState, useCallback, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
 import { shareToWhatsApp, formatBudgetSummary, formatOverdueReminder } from '../services/shareService';
 import { financeService } from '../services/financeService';
 import { DebtBalanceCard } from './debts/DebtBalanceCard';
+import { Customer, Supplier } from '../types';
 
 type TabType = 'all' | 'customer_debts' | 'supplier_debts' | 'critical';
 
@@ -19,11 +21,11 @@ const DebtsReport: React.FC = memo(() => {
 
   const filteredBalances = useMemo(() => {
     let list: any[] = [];
-    customers.forEach(c => {
+    customers.forEach((c: Customer) => {
       const bal = financeService.getCustomerBalances(c.id, sales, vouchers).find(b => b.currency === activeCurrency);
       if (bal && bal.amount !== 0) list.push({ id: c.id, name: c.name, type: 'عميل', amount: bal.amount, days: bal.daysSinceLastOp, status: bal.status, phone: c.phone });
     });
-    suppliers.forEach(s => {
+    suppliers.forEach((s: Supplier) => {
       const bal = financeService.getSupplierBalances(s.id, purchases, vouchers).find(b => b.currency === activeCurrency);
       if (bal && bal.amount !== 0) list.push({ id: s.id, name: s.name, type: 'مورد', amount: -bal.amount, days: bal.daysSinceLastOp, status: bal.status, phone: s.phone });
     });

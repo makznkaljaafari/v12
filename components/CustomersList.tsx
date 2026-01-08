@@ -1,8 +1,9 @@
 
+
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
-import { Customer } from '../types';
+import { Customer, Sale, Voucher } from '../types';
 import { financeService } from '../services/financeService';
 
 const CustomersList: React.FC = memo(() => {
@@ -74,7 +75,7 @@ const CustomersList: React.FC = memo(() => {
 
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
-            {filteredCustomers.map((c) => {
+            {filteredCustomers.map((c: Customer) => {
               const debts = financeService.getCustomerBalances(c.id, sales, vouchers);
               const totalDebt = debts.find(d => d.currency === 'YER')?.amount || 0;
               const isGeneral = c.name === "الزبون العام نقدي";
@@ -132,7 +133,7 @@ const CustomersList: React.FC = memo(() => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--color-border-default)]/50">
-                            {filteredCustomers.map((c, idx) => {
+                            {filteredCustomers.map((c: Customer, idx: number) => {
                                 const debts = financeService.getCustomerBalances(c.id, sales, vouchers);
                                 const totalDebt = debts.find(d => d.currency === 'YER')?.amount || 0;
                                 const isGeneral = c.name === "الزبون العام نقدي";

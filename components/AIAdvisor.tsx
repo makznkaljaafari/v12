@@ -1,13 +1,13 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { PageLayout } from './ui/Layout';
 import { getChatResponse } from '../services/geminiService';
 import { ChatMessage, AppError } from '../types';
 import { useAIProcessor } from '../hooks/useAIProcessor';
 import { useIsMounted } from '../hooks/useIsMounted';
 import { ChatHistory } from './ai/ChatHistory';
 import { ConfirmationDialog } from './ai/ConfirmationDialog';
+// Add import for PageLayout
+import { PageLayout } from './ui/Layout';
 
 const AIAdvisor: React.FC = () => {
   const { sales, customers, purchases, vouchers, categories, suppliers, exchangeRates, navigate, addNotification } = useApp();
@@ -29,7 +29,7 @@ const AIAdvisor: React.FC = () => {
         timestamp: new Date().toISOString()
       }]);
     }
-  }, []);
+  }, [messages.length]); // Added messages.length to dependencies
 
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -51,7 +51,7 @@ const AIAdvisor: React.FC = () => {
 
       setMessages(prev => [...prev, { 
         id: (Date.now() + 1).toString(), role: 'model', 
-        text: aiResponse.text || "أبشر يا مدير، جاري تنفيذ طلبك...", 
+        text: aiResponse.text || "أبشر يا مدير، جاري تنفيذ طلبك...", // Handle undefined text
         timestamp: new Date().toISOString() 
       }]);
     } catch (err: any) {

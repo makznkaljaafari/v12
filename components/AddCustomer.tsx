@@ -1,14 +1,16 @@
 
+
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
 import { BaseInput } from './ui/atoms/BaseInput';
 import { BaseButton } from './ui/atoms/BaseButton';
+import { Customer } from '../types';
 
 const AddCustomer: React.FC = () => {
   const { customers, addCustomer, navigate, navigationParams, addNotification, theme } = useApp();
   
-  const editingCustomer = navigationParams?.customerId ? customers.find(c => c.id === navigationParams.customerId) : null;
+  const editingCustomer = navigationParams?.customerId ? customers.find((c: Customer) => c.id === navigationParams.customerId) : null;
 
   const [formData, setFormData] = useState({ 
     id: editingCustomer?.id,

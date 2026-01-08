@@ -1,22 +1,17 @@
 
+
 import React, { useMemo, useState, memo, useCallback } from 'react';
-import { useUI } from '../context/UIContext';
-import { useAuth } from '../context/AuthContext';
-import { useData } from '../context/DataContext';
+import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
 import { financeService } from '../services/financeService';
 import { InstallPWAButton } from './ui/InstallPWAButton';
 import { StatCard } from './ui/atoms/StatCard';
 import { FinancialChart } from './ui/molecules/FinancialChart';
 import { QuickActionsGrid } from './dashboard/QuickActionsGrid';
+import { Expense } from '../types';
 
 const Dashboard: React.FC = memo(() => {
-  const { navigate, theme, isSyncing, isOnline } = useUI();
-  const { user } = useAuth();
-  const { 
-    sales, purchases, vouchers, customers, suppliers, expenses, 
-    loadAllData 
-  } = useData();
+  const { navigate, resolvedTheme, isSyncing, isOnline, user, sales, purchases, vouchers, customers, suppliers, expenses, loadAllData } = useApp();
   
   const [activeCurrency, setActiveCurrency] = useState<'YER' | 'SAR' | 'OMR'>('YER');
 
@@ -30,7 +25,7 @@ const Dashboard: React.FC = memo(() => {
   }, [sales, expenses, activeCurrency]);
 
   const totalExpensesValue = useMemo(() => {
-    return expenses.filter(e => e.currency === activeCurrency).reduce((sum, e) => sum + e.amount, 0);
+    return expenses.filter((e: Expense) => e.currency === activeCurrency).reduce((sum: number, e: Expense) => sum + e.amount, 0);
   }, [expenses, activeCurrency]);
 
   const handleRefreshData = useCallback(() => {
@@ -51,7 +46,7 @@ const Dashboard: React.FC = memo(() => {
       <div className="space-y-6 pb-44 w-full max-w-7xl mx-auto px-1 sm:px-2">
         
         <div className="space-y-4">
-          <div className={`p-3 rounded-2xl flex items-center justify-between border ${theme === 'dark' ? 'bg-slate-900/50 border-white/5' : 'bg-white border-slate-200 shadow-sm'}`}>
+          <div className={`p-3 rounded-2xl flex items-center justify-between border ${resolvedTheme === 'dark' ? 'bg-slate-900/50 border-white/5' : 'bg-white border-slate-200 shadow-sm'}`}>
              <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-red-500 animate-pulse'}`}></div>
                 <p className="text-[10px] font-black opacity-60 uppercase tracking-widest">{isOnline ? 'متصل سحابياً' : 'وضع محلي'}</p>
@@ -80,10 +75,10 @@ const Dashboard: React.FC = memo(() => {
              <h3 className="text-[10px] font-black uppercase tracking-widest opacity-40">الخدمات الأساسية</h3>
              <button onClick={() => navigate('ai-advisor')} className="text-[10px] font-black text-indigo-500">المحاسبة بالذكاء 🤖</button>
           </div>
-          <QuickActionsGrid navigate={navigate} theme={theme} />
+          <QuickActionsGrid navigate={navigate} theme={resolvedTheme} />
         </div>
 
-        <div className={`p-4 lg:p-6 rounded-[2rem] border shadow-sm relative overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-white/5' : 'bg-white border-slate-200'}`}>
+        <div className={`p-4 lg:p-6 rounded-[2rem] border shadow-sm relative overflow-hidden ${resolvedTheme === 'dark' ? 'bg-slate-900 border-white/5' : 'bg-white border-slate-200'}`}>
            <div className="flex justify-between items-start mb-2">
               <div>
                  <h3 className="font-black text-xs lg:text-sm">اتجاه السيولة الأسبوعي</h3>
@@ -95,7 +90,7 @@ const Dashboard: React.FC = memo(() => {
               </div>
            </div>
            <div className="h-40 lg:h-56">
-              <FinancialChart data={weeklyTrend} theme={theme} />
+              <FinancialChart data={weeklyTrend} theme={resolvedTheme} />
            </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -7,12 +8,13 @@ import { BaseInput } from './ui/atoms/BaseInput';
 import { BaseSelect } from './ui/atoms/BaseSelect';
 import { BaseButton } from './ui/atoms/BaseButton';
 import { CurrencySwitcher } from './ui/molecules/CurrencySwitcher';
+import { Expense } from '../types';
 
 const AddExpense: React.FC = () => {
   const { navigate, theme, navigationParams, user, addExpense, addExpenseTemplate, addNotification, expenseCategories, expenses } = useApp();
   
   const editingExpense = useMemo(() => 
-    navigationParams?.expenseId ? expenses.find((e: any) => e.id === navigationParams.expenseId) : null
+    navigationParams?.expenseId ? expenses.find((e: Expense) => e.id === navigationParams.expenseId) : null
   , [expenses, navigationParams?.expenseId]);
 
   const [formData, setFormData] = useState({

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -12,7 +13,7 @@ const VouchersList: React.FC = memo(() => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   const filteredVouchers = useMemo(() => {
-    return vouchers.filter(v => {
+    return vouchers.filter((v: Voucher) => {
       const matchesFilter = filter === 'الكل' || v.type === filter;
       const matchesSearch = v.person_name.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesFilter && matchesSearch;
@@ -91,7 +92,7 @@ const VouchersList: React.FC = memo(() => {
 
         {viewMode === 'grid' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredVouchers.map((v) => (
+            {filteredVouchers.map((v: Voucher) => (
                 <div 
                   key={v.id} 
                   onClick={() => navigate('voucher-details', { voucherId: v.id })}
@@ -136,7 +137,7 @@ const VouchersList: React.FC = memo(() => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--color-border-default)]/50">
-                            {filteredVouchers.map((v, idx) => (
+                            {filteredVouchers.map((v: Voucher, idx: number) => (
                                 <tr 
                                   key={v.id} 
                                   onClick={() => navigate('voucher-details', { voucherId: v.id })}

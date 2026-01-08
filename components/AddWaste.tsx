@@ -1,18 +1,25 @@
 
+
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
 import { BaseInput } from './ui/atoms/BaseInput';
 import { BaseSelect } from './ui/atoms/BaseSelect';
 import { BaseButton } from './ui/atoms/BaseButton';
+import { QatCategory, Waste } from '../types';
 
 const AddWaste: React.FC = () => {
-  const { addWaste, navigate, categories, addNotification, theme } = useApp();
+  const { addWaste, navigate, categories, addNotification, theme, navigationParams } = useApp();
+  
+  const editingWaste = useMemo(() => 
+    navigationParams?.wasteId ? (categories as Waste[]).find((w: Waste) => w.id === navigationParams.wasteId) : null
+  , [categories, navigationParams?.wasteId]);
+
   const [formData, setFormData] = useState({
-    qat_type: categories[0]?.name || '',
-    quantity: '' as number | '',
-    estimated_loss: '' as number | '',
-    reason: 'يباس / تلف طبيعي'
+    qat_type: editingWaste?.qat_type || categories[0]?.name || '',
+    quantity: editingWaste?.quantity || '' as number | '',
+    estimated_loss: editingWaste?.estimated_loss || '' as number | '',
+    reason: editingWaste?.reason || 'يباس / تلف طبيعي'
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,9 +36,10 @@ const AddWaste: React.FC = () => {
     try {
       await addWaste({
         ...formData,
+        id: editingWaste?.id,
         quantity: quantityNum,
         estimated_loss: Number(formData.estimated_loss) || 0,
-        date: new Date().toISOString()
+        date: editingWaste?.date || new Date().toISOString()
       });
       addNotification("تم التسجيل 🥀", "تم خصم التالف من المخزون بنجاح.", "success");
       navigate('waste');
@@ -43,7 +51,7 @@ const AddWaste: React.FC = () => {
   };
 
   const qatOptions = useMemo(() => 
-    categories.map((c: any) => ({ value: c.name, label: c.name }))
+    categories.map((c: QatCategory) => ({ value: c.name, label: c.name }))
   , [categories]);
 
   return (

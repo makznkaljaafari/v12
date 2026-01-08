@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -8,13 +9,14 @@ import { BaseInput } from './ui/atoms/BaseInput';
 import { BaseSelect } from './ui/atoms/BaseSelect';
 import { OperationTotalBar } from './ui/molecules/OperationTotalBar';
 import { CurrencySwitcher } from './ui/molecules/CurrencySwitcher';
+import { Purchase, Supplier, QatCategory } from '../types';
 
 const AddPurchase: React.FC = () => {
   const { purchases, addPurchase, navigate, suppliers, categories, user, addNotification, navigationParams, resolvedTheme, formatValue } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const editingPurchase = useMemo(() => 
-    navigationParams?.purchaseId ? purchases.find(p => p.id === navigationParams.purchaseId) : null
+    navigationParams?.purchaseId ? purchases.find((p: Purchase) => p.id === navigationParams.purchaseId) : null
   , [purchases, navigationParams?.purchaseId]);
 
   const [formData, setFormData] = useState({
@@ -43,7 +45,7 @@ const AddPurchase: React.FC = () => {
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
-    const supplier = suppliers.find(s => s.id === formData.supplier_id);
+    const supplier = suppliers.find((s: Supplier) => s.id === formData.supplier_id);
     if (!supplier) return addNotification("تنبيه ⚠️", "يرجى اختيار المورد أولاً", "warning");
 
     setIsSubmitting(true);
@@ -65,8 +67,8 @@ const AddPurchase: React.FC = () => {
       <div className="space-y-6 page-enter pb-44 max-w-2xl mx-auto w-full px-2">
         <div className={`p-6 sm:p-8 rounded-[2.5rem] border-2 shadow-2xl space-y-6 ${resolvedTheme === 'dark' ? 'bg-slate-900 border-white/5' : 'bg-white border-slate-100'}`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <BaseSelect label="المورد / المزارع" icon="🚛" options={[{ value: '', label: '-- اختر المورد --' }, ...suppliers.map(s => ({ value: s.id, label: s.name }))]} value={formData.supplier_id} onChange={e => setFormData({ ...formData, supplier_id: e.target.value })} required />
-            <BaseSelect label="نوع القات" icon="🌿" options={categories.map(cat => ({ value: cat.name, label: cat.name }))} value={formData.qat_type} onChange={e => setFormData({ ...formData, qat_type: e.target.value })} required />
+            <BaseSelect label="المورد / المزارع" icon="🚛" options={[{ value: '', label: '-- اختر المورد --' }, ...suppliers.map((s: Supplier) => ({ value: s.id, label: s.name }))]} value={formData.supplier_id} onChange={e => setFormData({ ...formData, supplier_id: e.target.value })} required />
+            <BaseSelect label="نوع القات" icon="🌿" options={categories.map((cat: QatCategory) => ({ value: cat.name, label: cat.name }))} value={formData.qat_type} onChange={e => setFormData({ ...formData, qat_type: e.target.value })} required />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

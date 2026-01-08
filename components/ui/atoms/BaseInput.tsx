@@ -1,14 +1,9 @@
 
+
 import React, { memo } from 'react';
+import { BaseInputProps as BaseInputPropsType } from '../../../types'; // Import the new type
 
-interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
-  label?: string;
-  icon?: string;
-  error?: string;
-  as?: 'input' | 'textarea';
-}
-
-export const BaseInput: React.FC<BaseInputProps> = memo(({ 
+export const BaseInput: React.FC<BaseInputPropsType> = memo(({ 
   label, icon, error, as = 'input', className = '', ...props 
 }) => {
   const InputTag = as as any;

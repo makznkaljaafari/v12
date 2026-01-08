@@ -1,8 +1,9 @@
 
+
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
-import { Supplier } from '../types';
+import { Supplier, Purchase, Voucher } from '../types';
 import { financeService } from '../services/financeService';
 
 const SuppliersList: React.FC = memo(() => {
@@ -61,7 +62,7 @@ const SuppliersList: React.FC = memo(() => {
 
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
-            {filteredSuppliers.map((s) => {
+            {filteredSuppliers.map((s: Supplier) => {
               const balances = financeService.getSupplierBalances(s.id, purchases, vouchers);
               const totalDue = balances.find(b => b.currency === 'YER')?.amount || 0;
               return (
@@ -115,7 +116,7 @@ const SuppliersList: React.FC = memo(() => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--color-border-default)]/50">
-                            {filteredSuppliers.map((s, idx) => {
+                            {filteredSuppliers.map((s: Supplier, idx: number) => {
                                 const balances = financeService.getSupplierBalances(s.id, purchases, vouchers);
                                 const totalDue = balances.find(b => b.currency === 'YER')?.amount || 0;
                                 return (
@@ -124,7 +125,7 @@ const SuppliersList: React.FC = memo(() => {
                                       onClick={() => navigate('account-statement', { personId: s.id, personType: 'مورد' })}
                                       className="text-xs hover:bg-[var(--color-background-tertiary)]/50 transition-colors cursor-pointer"
                                     >
-                                        <td className="p-4 text-center font-black opacity-30 tabular-nums text-[var(--color-text-muted)]">{idx + 1}</td>
+                                        <td className="p-4 text-center font-black opacity-30 tabular-nums">{idx + 1}</td>
                                         <td className="p-4 font-black border-l text-[var(--color-text-default)]">{s.name}</td>
                                         <td className="p-4 text-center border-l tabular-nums font-bold text-[var(--color-text-muted)]">{s.phone}</td>
                                         <td className={`p-4 text-center border-l font-black tabular-nums ${totalDue > 0 ? 'text-[var(--color-status-danger)]' : 'text-[var(--color-status-success)]'}`}>{totalDue.toLocaleString()}</td>

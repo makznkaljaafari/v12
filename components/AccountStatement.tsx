@@ -1,4 +1,5 @@
 
+
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -8,6 +9,7 @@ import { AccountPicker } from './account-statement/AccountPicker';
 import { StatementTable } from './account-statement/StatementTable';
 import { StatementHeader } from './account-statement/StatementHeader';
 import { useAccountStatement } from '../hooks/useAccountStatement';
+import { Customer, Supplier } from '../types';
 
 const AccountStatement: React.FC = () => {
   const { navigationParams, navigate, sales, purchases, vouchers, customers, suppliers, resolvedTheme } = useApp();
@@ -21,7 +23,7 @@ const AccountStatement: React.FC = () => {
 
   const person = useMemo(() => {
     if (!selectedPerson) return null;
-    return (selectedPerson.type === 'عميل' ? customers : suppliers).find((p: any) => p.id === selectedPerson.id);
+    return (selectedPerson.type === 'عميل' ? customers : suppliers).find((p: Customer | Supplier) => p.id === selectedPerson.id);
   }, [selectedPerson, customers, suppliers]);
 
   const statementData = useAccountStatement({
@@ -39,11 +41,11 @@ const AccountStatement: React.FC = () => {
   }, [person, selectedPerson, sales, purchases, vouchers, selectedCurrency]);
 
   const handleShare = () => {
-    if (!person) return;
+    if (!person || !selectedPerson) return;
     const balances = [{ currency: selectedCurrency, amount: currentBalance }];
-    const text = selectedPerson?.type === 'عميل' 
-      ? formatCustomerStatement(person, sales, vouchers, balances)
-      : formatSupplierStatement(person, purchases, vouchers, balances);
+    const text = selectedPerson.type === 'عميل' 
+      ? formatCustomerStatement(person as Customer, sales, vouchers, balances)
+      : formatSupplierStatement(person as Supplier, purchases, vouchers, balances);
     shareToWhatsApp(text, person.phone);
   };
 

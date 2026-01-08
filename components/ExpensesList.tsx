@@ -1,8 +1,9 @@
 
+
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
-import { Expense } from '../types';
+import { Expense, ExpenseTemplate } from '../types';
 
 const ExpensesList: React.FC = memo(() => {
   const { expenses, expenseTemplates, navigate, addExpense, theme, deleteExpense, addNotification } = useApp();
@@ -10,17 +11,17 @@ const ExpensesList: React.FC = memo(() => {
   const [activeTab, setActiveTab] = useState<'all' | 'templates'>('all');
 
   const filteredExpenses = useMemo(() => {
-    return expenses.filter(e => e.title.toLowerCase().includes(searchTerm.toLowerCase()) || e.category.toLowerCase().includes(searchTerm.toLowerCase()));
+    return expenses.filter((e: Expense) => e.title.toLowerCase().includes(searchTerm.toLowerCase()) || e.category.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [expenses, searchTerm]);
 
   const totalMonthlyExpenses = useMemo(() => {
     const now = new Date();
     return expenses
-      .filter(e => new Date(e.date).getMonth() === now.getMonth())
-      .reduce((sum, e) => sum + e.amount, 0);
+      .filter((e: Expense) => new Date(e.date).getMonth() === now.getMonth())
+      .reduce((sum: number, e: Expense) => sum + e.amount, 0);
   }, [expenses]);
 
-  const handleApplyTemplate = useCallback(async (template: any) => {
+  const handleApplyTemplate = useCallback(async (template: ExpenseTemplate) => {
     try {
       await addExpense({
         title: template.title,
@@ -102,7 +103,7 @@ const ExpensesList: React.FC = memo(() => {
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredExpenses.map((e) => (
+                {filteredExpenses.map((e: Expense) => (
                   <div key={e.id} className={`p-6 rounded-[2rem] border-2 transition-all hover:shadow-2xl ${theme === 'dark' ? 'bg-[var(--color-background-card)] border-[var(--color-border-default)]' : 'bg-[var(--color-background-card)] border-[var(--color-border-default)] shadow-xl'}`}>
                     <div className="flex justify-between items-start mb-4">
                        <div className="flex items-center gap-3">
@@ -131,7 +132,7 @@ const ExpensesList: React.FC = memo(() => {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in zoom-in-95">
-             {expenseTemplates.map(template => (
+             {expenseTemplates.map((template: ExpenseTemplate) => (
                <div key={template.id} className="p-6 rounded-[2.5rem] border-2 bg-gradient-to-br from-[var(--color-status-warning-bg)] to-[var(--color-background-card)] dark:from-[var(--color-background-card)] dark:to-[var(--color-background-input)] border-[var(--color-accent-amber)]/50 shadow-xl flex flex-col items-center text-center group transition-all hover:scale-105">
                   <div className="w-14 h-14 bg-[var(--color-accent-amber)] text-[var(--color-text-inverse)] rounded-2xl flex items-center justify-center text-2xl shadow-lg mb-4 group-hover:rotate-12 transition-transform">🔁</div>
                   <h4 className="font-black text-sm text-[var(--color-text-default)] mb-1">{template.title}</h4>

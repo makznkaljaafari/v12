@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -6,6 +7,7 @@ import { BaseInput } from './ui/atoms/BaseInput';
 import { BaseSelect } from './ui/atoms/BaseSelect';
 import { BaseButton } from './ui/atoms/BaseButton';
 import { CurrencySwitcher } from './ui/molecules/CurrencySwitcher';
+import { Customer, Supplier } from '../types';
 
 const AddOpeningBalance: React.FC = () => {
   const { addOpeningBalance, navigate, customers, suppliers, theme, addNotification } = useApp();
@@ -24,7 +26,7 @@ const AddOpeningBalance: React.FC = () => {
 
   useEffect(() => {
     const list = formData.person_type === 'عميل' ? customers : suppliers;
-    const person = list.find(p => p.id === formData.person_id);
+    const person = list.find((p: Customer | Supplier) => p.id === formData.person_id);
     if (person) setFormData(prev => ({ ...prev, person_name: person.name }));
   }, [formData.person_id, formData.person_type, customers, suppliers]);
 
@@ -50,7 +52,7 @@ const AddOpeningBalance: React.FC = () => {
 
   const personOptions = useMemo(() => [
     { value: '', label: `-- اختر ال${formData.person_type} --` },
-    ...(formData.person_type === 'عميل' ? customers : suppliers).map(p => ({ value: p.id, label: p.name }))
+    ...(formData.person_type === 'عميل' ? customers : suppliers).map((p: Customer | Supplier) => ({ value: p.id, label: p.name }))
   ], [formData.person_type, customers, suppliers]);
 
   return (

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
@@ -7,13 +8,14 @@ import { BaseInput } from './ui/atoms/BaseInput';
 import { BaseSelect } from './ui/atoms/BaseSelect';
 import { BaseButton } from './ui/atoms/BaseButton';
 import { CurrencySwitcher } from './ui/molecules/CurrencySwitcher';
+import { Voucher, Customer, Supplier } from '../types';
 
 const AddVoucher: React.FC = () => {
   const { addVoucher, navigate, navigationParams, customers, suppliers, vouchers, theme, user, addNotification } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const editingVoucher = useMemo(() => 
-    navigationParams?.voucherId ? vouchers.find(v => v.id === navigationParams.voucherId) : null
+    navigationParams?.voucherId ? vouchers.find((v: Voucher) => v.id === navigationParams.voucherId) : null
   , [vouchers, navigationParams?.voucherId]);
 
   const [formData, setFormData] = useState({
@@ -30,7 +32,7 @@ const AddVoucher: React.FC = () => {
 
   useEffect(() => {
     const list = formData.person_type === 'عميل' ? customers : suppliers;
-    const person = list.find(p => p.id === formData.person_id);
+    const person = list.find((p: Customer | Supplier) => p.id === formData.person_id);
     if (person) setFormData(prev => ({ ...prev, person_name: person.name }));
   }, [formData.person_id, formData.person_type, customers, suppliers]);
 
@@ -55,7 +57,7 @@ const AddVoucher: React.FC = () => {
 
   const personOptions = useMemo(() => [
     { value: '', label: `-- اختر ال${formData.person_type} --` },
-    ...(formData.person_type === 'عميل' ? customers : suppliers).map(p => ({ value: p.id, label: p.name }))
+    ...(formData.person_type === 'عميل' ? customers : suppliers).map((p: Customer | Supplier) => ({ value: p.id, label: p.name }))
   ], [formData.person_type, customers, suppliers]);
 
   return (
@@ -76,7 +78,7 @@ const AddVoucher: React.FC = () => {
                     key={t} type="button"
                     onClick={() => setFormData({...formData, person_type: t as any, person_id: ''})}
                     className={`flex-1 py-3 rounded-xl font-black text-[10px] transition-all ${
-                      formData.person_type === t ? 'bg-[var(--color-accent-indigo)] text-[var(--color-text-inverse)]' : 'text-[var(--color-text-muted)]'
+                      formData.person_type === t ? 'bg-[var(--color-accent-indigo)] text-[var(--color-text-inverse)]' : 'text-[var(--color-text-muted)] opacity-50'
                     }`}
                   >{t === 'عميل' ? 'حساب عميل' : 'حساب مورد'}</button>
                 ))}
@@ -95,6 +97,8 @@ const AddVoucher: React.FC = () => {
                <CurrencySwitcher value={formData.currency} onChange={v => setFormData({...formData, currency: v})} />
             </div>
 
+            {/* Removed balance_type section */}
+            {/* 
             <div className="bg-[var(--color-background-tertiary)] p-1 rounded-2xl flex gap-1 border border-[var(--color-border-default)] shadow-inner w-full">
                 {['مدين', 'دائن'].map(t => (
                   <button
@@ -106,12 +110,13 @@ const AddVoucher: React.FC = () => {
                   >{t === 'مدين' ? 'مدين (لنا عنده)' : 'دائن (له عندنا)'}</button>
                 ))}
             </div>
+            */}
 
-            <div className="text-center py-6 border-t border-[var(--color-border-default)]/50">
-                <p className="text-[10px] font-black text-[var(--color-text-muted)] uppercase tracking-widest mb-2">مبلغ الرصيد المرحل</p>
+            <div className="text-center py-6 border-t border-[var(--color-border-default)]/50"> {/* Adjusted border-y to border-t */}
+                <p className="text-[10px] font-black text-[var(--color-text-muted)] uppercase tracking-widest mb-2">مبلغ السند</p> {/* Changed label from "مبلغ الرصيد المرحل" */}
                 <input 
                    type="number" 
-                   className={`w-full bg-transparent text-center font-black text-6xl outline-none tabular-nums ${formData.balance_type === 'مدين' ? 'text-[var(--color-status-success)]' : 'text-[var(--color-status-danger)]'}`}
+                   className={`w-full bg-transparent text-center font-black text-6xl outline-none tabular-nums ${formData.type === 'قبض' ? 'text-[var(--color-status-success)]' : 'text-[var(--color-status-danger)]'}`} {/* Adjusted text color logic based on voucher type */}
                    value={formData.amount}
                    placeholder="0"
                    onChange={e => setFormData({ ...formData, amount: e.target.value === '' ? '' : parseFloat(e.target.value) })}

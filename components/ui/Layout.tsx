@@ -1,8 +1,10 @@
 
+
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
 import { GlobalSearch } from './molecules/GlobalSearch';
 import { BaseButton } from './atoms/BaseButton';
+import { AppNotification } from '../../types';
 
 interface LayoutProps {
   title: string;
@@ -17,7 +19,7 @@ export const PageLayout: React.FC<LayoutProps> = memo(({ title, headerExtra, chi
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   
-  const unreadCount = useMemo(() => notifications.filter(n => !n.read).length, [notifications]);
+  const unreadCount = useMemo(() => notifications.filter((n: AppNotification) => !n.read).length, [notifications]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);

@@ -1,7 +1,9 @@
 
+
 import React, { useEffect, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageLayout } from './ui/Layout';
+import { AppNotification } from '../types';
 
 const NotificationsPage: React.FC = memo(() => {
   const { notifications, markNotificationsAsRead, navigate, deleteAllOldNotifications } = useApp();
@@ -26,7 +28,7 @@ const NotificationsPage: React.FC = memo(() => {
     >
       <div className="space-y-4 pt-4 page-enter pb-44 px-2 md:px-4" role="region" aria-label="قائمة التنبيهات">
         {notifications.length > 0 ? (
-          notifications.map(n => (
+          notifications.map((n: AppNotification) => (
             <div 
               key={n.id} 
               className={`p-4 sm:p-6 rounded-xl sm:rounded-[2rem] border-2 transition-all ${
