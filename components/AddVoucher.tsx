@@ -112,7 +112,7 @@ const AddVoucher: React.FC = () => {
             </div>
             */}
 
-            <div className="text-center py-6 border-t border-[var(--color-border-default)]/50"> {/* Adjusted border-y to border-t */}
+            <div className="text-center py-6 border-t border-dashed border-[var(--color-border-default)]/50"> {/* Adjusted border-y to border-t */}
                 <p className="text-[10px] font-black text-[var(--color-text-muted)] uppercase tracking-widest mb-2">مبلغ السند</p> {/* Changed label from "مبلغ الرصيد المرحل" */}
                 <input 
                    type="number" 
@@ -138,7 +138,7 @@ const AddVoucher: React.FC = () => {
             size="xl" className="w-full"
             onClick={handleSubmit} loading={isSubmitting}
         >
-            {editingVoucher ? 'حفظ التعديلات' : `تأكيد سند ال${formData.type} ✅`}
+            {editingVoucher ? 'حفظ التعديلات' : 'تأكيد سند ال' + formData.type + ' ✅'}
         </BaseButton>
       </form>
     </PageLayout>

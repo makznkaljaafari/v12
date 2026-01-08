@@ -10,7 +10,7 @@ const FinanceContext = createContext<any>(undefined);
 
 export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { addNotification, triggerFeedback, isOnline } = useUI();
-  const { setCategories } = useInventory();
+  const { setCategories, categories } = useInventory();
   const { user } = useAuth();
   
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
@@ -49,11 +49,11 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     try {
       const saved = await dataService.saveVoucher(v);
-      setVouchers((prev: Voucher[]) => prev.map(item => item.id === tempId ? saved : item));
+      setVouchers(prev => prev.map(item => item.id === tempId ? saved : item));
       dataService.logActivity(user.id, isEditing ? "تعديل سند مالي" : "إضافة سند مالي", `الطرف: ${saved.person_name}, النوع: ${saved.type}, المبلغ: ${saved.amount} ${saved.currency}`, 'voucher');
     } catch (e: any) {
       logger.error("Failed to add voucher:", e);
-      setVouchers((prev: Voucher[]) => prev.filter(item => item.id !== tempId));
+      setVouchers(prev => prev.filter(item => item.id !== tempId));
       addNotification("خطأ مزامنة السند ⚠️", e.message || "تعذر الحفظ السحابي. حدث خطأ غير متوقع.", "warning");
     }
   }, [addNotification, triggerFeedback, isOnline, user]);
@@ -72,7 +72,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       created_at: new Date().toISOString(),
       image_url: e.image_url || (e.image_base64_data ? `data:${e.image_mime_type};base64,${e.image_base64_data.split(',')[1]}` : undefined)
     } as Expense;
-    setExpenses((prev: Expense[]) => [optimisticExpense, ...prev.filter(item => item.id !== tempId)]);
+    setExpenses(prev => [optimisticExpense, ...prev.filter(item => item.id !== tempId)]);
     
     if (!isOnline) {
       addNotification("مصروف محلي 💾", "تم الخصم من الصندوق في وضع عدم الاتصال. ستتم المزامنة لاحقاً.", "warning");
@@ -83,11 +83,11 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       const saved = await dataService.saveExpense(e);
       const finalSaved = { ...saved, image_base64_data: undefined, image_mime_type: undefined };
-      setExpenses((prev: Expense[]) => prev.map(item => item.id === tempId ? finalSaved : item));
+      setExpenses(prev => prev.map(item => item.id === tempId ? finalSaved : item));
       dataService.logActivity(user.id, isEditing ? "تعديل مصروف" : "إضافة مصروف", `العنوان: ${saved.title}, الفئة: ${saved.category}, المبلغ: ${saved.amount} ${saved.currency}`, 'expense');
     } catch (err: any) {
       logger.error("Failed to add expense:", err);
-      setExpenses((prev: Expense[]) => prev.filter(item => item.id !== tempId));
+      setExpenses(prev => prev.filter(item => item.id !== tempId));
       addNotification("خطأ ⚠️", err.message || "فشل حفظ المصروف سحابياً. حدث خطأ غير متوقع.", "warning");
     }
   }, [addNotification, isOnline, user]);
@@ -124,12 +124,12 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     try {
       const saved = await dataService.saveWaste(w);
-      setWasteRecords((prev: Waste[]) => prev.map(item => item.id === tempId ? saved : item));
+      setWasteRecords(prev => prev.map(item => item.id === tempId ? saved : item));
       addNotification("تسجيل تالف 🥀", "تم خصم الكمية بنجاح.", "warning");
       dataService.logActivity(user.id, isEditing ? "تعديل سجل تالف" : "إضافة سجل تالف", `الصنف: ${saved.qat_type}, الكمية: ${saved.quantity}, السبب: ${saved.reason}`, 'waste');
     } catch (e: any) {
       logger.error("Failed to add waste:", e);
-      setWasteRecords((prev: Waste[]) => prev.filter(item => item.id !== tempId));
+      setWasteRecords(prev => prev.filter(item => item.id !== tempId));
       addNotification("خطأ ⚠️", e.message || "تعذر تسجيل التالف. حدث خطأ غير متوقع.", "warning");
     }
   }, [addNotification, setCategories, isOnline, user, wasteRecords]); // Added wasteRecords to dependency
@@ -192,13 +192,13 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     try {
       const saved = await dataService.saveExpenseTemplate(template);
-      setExpenseTemplates((prev: ExpenseTemplate[]) => prev.map(item => item.id === tempId ? saved : item));
+      setExpenseTemplates(prev => prev.map(item => item.id === tempId ? saved : item));
       addNotification("تم حفظ القالب ✅", "تم حفظ المصروف كقالب متكرر.", "info");
       dataService.logActivity(user.id, isEditing ? "تعديل قالب مصروف" : "إضافة قالب مصروف", `القالب: ${saved.title}, المبلغ: ${saved.amount} ${saved.currency}`, 'expense');
       return saved;
     } catch (e: any) {
       logger.error("Failed to add expense template:", e);
-      setExpenseTemplates((prev: ExpenseTemplate[]) => prev.filter(item => item.id !== tempId));
+      setExpenseTemplates(prev => prev.filter(item => item.id !== tempId));
       addNotification("خطأ ⚠️", e.message || "فشل حفظ القالب سحابياً. حدث خطأ غير متوقع.", "warning");
       throw e;
     }
@@ -216,8 +216,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return;
     }
 
-    const original = [...vouchers];
-    setVouchers((prev: Voucher[]) => prev.filter(v => v.id !== id));
+    const originalVouchers = [...vouchers]; // Capture original state for rollback
+    setVouchers(prev => prev.filter(v => v.id !== id));
 
     if (!isOnline) addNotification("حذف محلي 🗑️", "تم حذف السند في وضع عدم الاتصال. ستتم المزامنة لاحقاً.", "warning");
 
@@ -227,7 +227,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       dataService.logActivity(user.id, "حذف سند مالي", `تم حذف سند ${voucherToDelete.type} لـ ${voucherToDelete.person_name}, المبلغ: ${voucherToDelete.amount} ${voucherToDelete.currency}`, 'voucher');
     } catch (e: any) {
       logger.error("Failed to delete voucher:", e);
-      setVouchers(original);
+      setVouchers(originalVouchers); // Rollback optimistic update
       addNotification("خطأ ❌", e.message || "فشل في عملية الحذف. حدث خطأ غير متوقع.", "warning");
       throw e;
     }
@@ -245,8 +245,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return;
     }
 
-    const original = [...expenses];
-    setExpenses((prev: Expense[]) => prev.filter(e => e.id !== id));
+    const originalExpenses = [...expenses]; // Capture original state for rollback
+    setExpenses(prev => prev.filter(e => e.id !== id));
 
     if (!isOnline) addNotification("حذف محلي 🗑️", "تم حذف المصروف في وضع عدم الاتصال. ستتم المزامنة لاحقاً.", "warning");
 
@@ -256,7 +256,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       dataService.logActivity(user.id, "حذف مصروف", `تم حذف المصروف: ${expenseToDelete.title}, المبلغ: ${expenseToDelete.amount} ${expenseToDelete.currency}`, 'expense');
     } catch (e: any) {
       logger.error("Failed to delete expense:", e);
-      setExpenses(original);
+      setExpenses(originalExpenses); // Rollback optimistic update
       addNotification("خطأ ❌", e.message || "فشل حذف المصروف. حدث خطأ غير متوقع.", "warning");
       throw e;
     }
@@ -274,11 +274,14 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return;
     }
 
-    const originalWasteRecords = [...wasteRecords]; // Capture original for potential rollback
-    setWasteRecords((prev: Waste[]) => prev.filter(w => w.id !== id));
-    // Revert stock change optimistically
+    // Store original states for rollback
+    const originalWasteRecords = [...wasteRecords];
+    const originalCategories = [...categories];
+
+    setWasteRecords(prev => prev.filter(w => w.id !== id));
+    // Optimistically update categories
     setCategories((prev: QatCategory[]) => prev.map((cat: QatCategory) => 
-        cat.name === wasteToDelete.qat_type ? { ...cat, stock: Number(cat.stock) + Number(wasteToDelete.quantity) } : cat
+        cat.name === wasteToDelete.qat_type ? { ...cat, stock: Number(cat.stock) - Number(wasteToDelete.quantity) } : cat
     ));
 
     if (!isOnline) addNotification("حذف محلي 🗑️", "تم حذف سجل التالف في وضع عدم الاتصال. ستتم المزامنة لاحقاً.", "warning");
@@ -289,14 +292,13 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       dataService.logActivity(user.id, "حذف سجل تالف", `تم حذف سجل التالف للصنف: ${wasteToDelete.qat_type}, الكمية: ${wasteToDelete.quantity}`, 'waste');
     } catch (e: any) {
       logger.error("Failed to delete waste:", e);
-      setWasteRecords(originalWasteRecords); // Revert optimistic update
-      setCategories((prev: QatCategory[]) => prev.map((cat: QatCategory) => 
-          cat.name === wasteToDelete.qat_type ? { ...cat, stock: Number(cat.stock) - Number(wasteToDelete.quantity) } : cat
-      ));
+      // Rollback optimistic updates
+      setWasteRecords(originalWasteRecords); 
+      setCategories(originalCategories); 
       addNotification("خطأ ❌", e.message || "فشل حذف سجل التالف. حدث خطأ غير متوقع.", "warning");
       throw e;
     }
-  }, [wasteRecords, addNotification, isOnline, user, setCategories]);
+  }, [wasteRecords, addNotification, isOnline, user, setCategories, categories]);
 
 
   const value = useMemo(() => ({

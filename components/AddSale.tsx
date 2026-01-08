@@ -95,7 +95,7 @@ const AddSale: React.FC = () => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">نوع القيد</label>
                 <div className="bg-slate-50 dark:bg-white/5 p-1 rounded-2xl flex gap-1 border border-slate-100 dark:border-white/5 shadow-inner w-full">
                   {['نقدي', 'آجل'].map(s => (
-                    <button key={s} type="button" onClick={() => setFormData({...formData, status: s as 'نقدي' | 'آجل'})} className={`flex-1 py-3 rounded-xl font-black text-[10px] transition-all ${formData.status === s ? (s === 'آجل' ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-white shadow-md') : 'text-slate-400'}`}>{s}</button>
+                    <button key={s} type="button" onClick={() => setFormData({...formData, status: s as any})} className={`flex-1 py-3 rounded-xl font-black text-[10px] transition-all ${formData.status === s ? (s === 'آجل' ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-white shadow-md') : 'text-slate-400'}`}>{s}</button>
                   ))}
                 </div>
              </div>

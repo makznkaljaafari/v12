@@ -67,22 +67,8 @@ const AddPurchase: React.FC = () => {
       <div className="space-y-6 page-enter pb-44 max-w-2xl mx-auto w-full px-2">
         <div className={`p-6 sm:p-8 rounded-[2.5rem] border-2 shadow-2xl space-y-6 ${resolvedTheme === 'dark' ? 'bg-slate-900 border-white/5' : 'bg-white border-slate-100'}`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <BaseSelect 
-              label="المورد / المزارع" 
-              icon="🚛" 
-              options={[{ value: '', label: '-- اختر المورد --' }, ...suppliers.map((s: Supplier) => ({ value: s.id, label: s.name }))]} 
-              value={formData.supplier_id} 
-              onChange={e => setFormData({ ...formData, supplier_id: e.target.value })} 
-              required 
-            />
-            <BaseSelect 
-              label="نوع القات" 
-              icon="🌿" 
-              options={categories.map((cat: QatCategory) => ({ value: cat.name, label: cat.name }))} 
-              value={formData.qat_type} 
-              onChange={e => setFormData({ ...formData, qat_type: e.target.value })} 
-              required 
-            />
+            <BaseSelect label="المورد / المزارع" icon="🚛" options={[{ value: '', label: '-- اختر المورد --' }, ...suppliers.map((s: Supplier) => ({ value: s.id, label: s.name }))]} value={formData.supplier_id} onChange={e => setFormData({ ...formData, supplier_id: e.target.value })} required />
+            <BaseSelect label="نوع القات" icon="🌿" options={categories.map((cat: QatCategory) => ({ value: cat.name, label: cat.name }))} value={formData.qat_type} onChange={e => setFormData({ ...formData, qat_type: e.target.value })} required />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -94,7 +80,7 @@ const AddPurchase: React.FC = () => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">نوع القيد</label>
                 <div className="bg-slate-50 dark:bg-white/5 p-1 rounded-2xl flex gap-1 border border-slate-100 dark:border-white/5 shadow-inner w-full">
                   {['نقدي', 'آجل'].map(s => (
-                    <button key={s} type="button" onClick={() => setFormData({...formData, status: s as 'نقدي' | 'آجل'})} className={`flex-1 py-3 rounded-xl font-black text-[10px] transition-all ${formData.status === s ? (s === 'آجل' ? 'bg-rose-500 text-white' : 'bg-orange-500 text-white shadow-md') : 'text-slate-400'}`}>{s}</button>
+                    <button key={s} type="button" onClick={() => setFormData({...formData, status: s as any})} className={`flex-1 py-3 rounded-xl font-black text-[10px] transition-all ${formData.status === s ? (s === 'آجل' ? 'bg-rose-500 text-white' : 'bg-orange-500 text-white shadow-md') : 'text-slate-400'}`}>{s}</button>
                   ))}
                 </div>
              </div>
